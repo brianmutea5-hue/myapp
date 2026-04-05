@@ -4,7 +4,9 @@ const app = express();
 
 app.set('view engine', 'ejs');
 app.set('views','./views');
-app.use(express.static('public'));
+app.use(express.static('views/public'));
+const users = {
+};
 
 
 app.use(express.urlencoded({ extended: true}));
@@ -34,7 +36,7 @@ app.get('/login', (req, res) => {
 app.post('/login', (req,res) => {
     const  username  = req.body.username
     const password = req.body.password
-    if (username === 'mutea' && password === '1234'){
+    if (users[username] && users[username] === password) {
         req.session.username=username;
         res.redirect('/');
 
@@ -48,7 +50,20 @@ app.post('/login', (req,res) => {
         res.redirect('/login');
 
     });
+app.get('/register', (req, res) => {
+    res.render('register');
+});
 
+app.post('/register', (req, res) => {
+    const username = req.body.username;
+    const password = req.body.password;
+    if (users[username]) {
+        res.send('Username already exists.');
+    } else {
+        users[username] = password;
+        res.redirect('/login');
+    }
+});
 
 
 app.listen(3000,() => {
